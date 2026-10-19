@@ -5,6 +5,8 @@ services:
         build:
             context: .
             target: app
+            args:
+                VITE_APP_NAME: '${VITE_APP_NAME:?VITE_APP_NAME must be set in .env}'
         restart: unless-stopped
         init: true
         env_file:
@@ -34,7 +36,13 @@ services:
             - sqlite_data:/var/www/html/database/sqlite
             - public_storage:/var/www/html/storage/app/public
         healthcheck:
-            test: ['CMD', 'php-fpm', '-t']
+            test:
+                [
+                    'CMD',
+                    'php',
+                    '-r',
+                    'exit(@fsockopen("127.0.0.1", 9000) ? 0 : 1);',
+                ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -44,12 +52,14 @@ services:
         build:
             context: .
             target: web
+            args:
+                VITE_APP_NAME: '${VITE_APP_NAME:?VITE_APP_NAME must be set in .env}'
         restart: unless-stopped
         depends_on:
             app:
                 condition: service_healthy
         ports:
-            - '127.0.0.1:${APP_PORT:-8000}:80'
+            - '127.0.0.1:${APP_PORT:?APP_PORT must be set in .env}:80'
         security_opt:
             - no-new-privileges:true
         volumes:

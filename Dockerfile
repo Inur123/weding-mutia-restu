@@ -37,6 +37,9 @@ WORKDIR /var/www/html
 
 FROM php-base AS build
 
+ARG VITE_APP_NAME
+ENV VITE_APP_NAME=${VITE_APP_NAME}
+
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY --from=node /usr/local/ /usr/local/
 
