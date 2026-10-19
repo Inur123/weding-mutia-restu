@@ -146,7 +146,7 @@
         <meta property="og:image" content="{{ $invitationShareImage }}" />
         <meta property="og:image:secure_url" content="{{ $invitationShareImage }}" />
         <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="960" />
+        <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="1200" />
         <meta property="og:image:alt" content="Foto cover undangan pernikahan Mutiara dan Restu" />
         <meta property="og:url" content="{{ url()->full() }}" />
