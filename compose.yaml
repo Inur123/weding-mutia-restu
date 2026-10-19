@@ -1,0 +1,70 @@
+name: wedding-mutia-restu
+
+services:
+    app:
+        build:
+            context: .
+            target: app
+        restart: unless-stopped
+        init: true
+        env_file:
+            - .env
+        environment:
+            APP_ENV: production
+            APP_KEY: '${APP_KEY:?APP_KEY must be set in .env}'
+            APP_DEBUG: 'false'
+            APP_URL: '${APP_URL:?APP_URL must be set in .env}'
+            LOG_CHANNEL: stderr
+            LOG_LEVEL: '${LOG_LEVEL:-warning}'
+            DB_CONNECTION: sqlite
+            DB_DATABASE: /var/www/html/database/sqlite/database.sqlite
+            DB_FOREIGN_KEYS: 'true'
+            DB_BUSY_TIMEOUT: '5000'
+            DB_JOURNAL_MODE: WAL
+            DB_SYNCHRONOUS: NORMAL
+            RUN_MIGRATIONS: '${RUN_MIGRATIONS:-true}'
+            RUN_USER_SEEDER: '${RUN_USER_SEEDER:-false}'
+            RUN_OPTIMIZE: '${RUN_OPTIMIZE:-false}'
+            SEED_USER_NAME: '${SEED_USER_NAME:-}'
+            SEED_USER_EMAIL: '${SEED_USER_EMAIL:-}'
+            SEED_USER_PASSWORD: '${SEED_USER_PASSWORD:-}'
+        security_opt:
+            - no-new-privileges:true
+        volumes:
+            - sqlite_data:/var/www/html/database/sqlite
+            - public_storage:/var/www/html/storage/app/public
+        healthcheck:
+            test: ['CMD', 'php-fpm', '-t']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 20s
+
+    nginx:
+        build:
+            context: .
+            target: web
+        restart: unless-stopped
+        depends_on:
+            app:
+                condition: service_healthy
+        ports:
+            - '127.0.0.1:${APP_PORT:-8000}:80'
+        security_opt:
+            - no-new-privileges:true
+        volumes:
+            - public_storage:/var/www/html/storage/app/public:ro
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'wget -q -O /dev/null http://127.0.0.1/up || exit 1',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 20s
+
+volumes:
+    sqlite_data:
+    public_storage:

@@ -1,0 +1,27 @@
+/* Fallbacks for older Safari and Android WebView. */
+@supports not (height: 100dvh) {
+    .cover-paper {
+        min-height: max(var(--invitation-vh, 100vh), 660px);
+    }
+}
+
+@supports not (width: min(100%, 450px)) {
+    .page,
+    .cover {
+        width: 100%;
+        max-width: 450px;
+    }
+}
+
+@supports not (bottom: max(1px, 2px)) {
+    .reference-nav {
+        bottom: 14px;
+    }
+}
+
+@supports not (font-size: clamp(1px, 2vw, 3px)) {
+    .cover-title,
+    .reference-hero h1 {
+        font-size: 40px;
+    }
+}
