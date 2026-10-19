@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import Favicon from '../../../images/foto-mempelai/foto-3.webp';
+import Favicon from '../../../images/theme-special03/couple.jpg';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
