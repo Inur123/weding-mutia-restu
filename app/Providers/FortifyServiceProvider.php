@@ -41,7 +41,7 @@ class FortifyServiceProvider extends ServiceProvider
                 {
                     Inertia::flash('toast', ['type' => 'success', 'message' => 'Berhasil keluar!']);
 
-                    return redirect('/login');
+                    return redirect('/mutiarestu/login');
                 }
             };
         });

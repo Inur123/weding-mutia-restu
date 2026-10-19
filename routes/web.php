@@ -6,7 +6,7 @@ use App\Http\Controllers\RsvpController;
 use App\Http\Controllers\UndanganController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login')->name('home');
+Route::redirect('/', '/mutiarestu/login')->name('home');
 
 Route::prefix('mutiarestu')->group(function () {
     // Halaman undangan publik (tanpa auth)
