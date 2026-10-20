@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { listenToMediaQuery } from '@/lib/media-query-listener';
 
 export type ResolvedAppearance = 'light' | 'dark';
 export type Appearance = ResolvedAppearance | 'system';
@@ -53,7 +54,10 @@ const subscribe = (callback: () => void) => {
 const notify = (): void => listeners.forEach((listener) => listener());
 
 const mediaQuery = (): MediaQueryList | null => {
-    if (typeof window === 'undefined') {
+    if (
+        typeof window === 'undefined' ||
+        typeof window.matchMedia !== 'function'
+    ) {
         return null;
     }
 
@@ -76,7 +80,11 @@ export function initializeTheme(): void {
     applyTheme(currentAppearance);
 
     // Set up system theme change listener
-    mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+    const systemThemeQuery = mediaQuery();
+
+    if (systemThemeQuery) {
+        listenToMediaQuery(systemThemeQuery, handleSystemThemeChange);
+    }
 }
 
 export function useAppearance(): UseAppearanceReturn {

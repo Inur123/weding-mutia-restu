@@ -39,6 +39,18 @@
             }
         </style>
 
+        @if (($page['component'] ?? null) !== 'undangan/index')
+            <style>
+                #app-load-error[hidden] { display: none; }
+                #app-load-error { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #fff; color: #171717; font-family: sans-serif; }
+                #app-load-error > div { width: 100%; max-width: 380px; }
+                #app-load-error h1 { font-size: 22px; }
+                #app-load-error p { line-height: 1.6; }
+                #app-load-error a { display: inline-block; min-height: 44px; padding: 12px 20px; border-radius: 6px; background: #171717; color: #fff; text-decoration: none; box-sizing: border-box; }
+                #app-load-error a:focus-visible { outline: 2px solid #171717; outline-offset: 3px; }
+            </style>
+        @endif
+
         @if (($page['component'] ?? null) === 'undangan/index')
             <meta name="color-scheme" content="light" data-inertia="color-scheme">
             <meta name="supported-color-schemes" content="light" data-inertia="supported-color-schemes">
@@ -173,5 +185,42 @@
         @endif
 
         <x-inertia::app />
+
+        @if (($page['component'] ?? null) !== 'undangan/index')
+            <div id="app-load-error" hidden role="alert">
+                <div>
+                    <h1>Halaman tidak dapat dimuat</h1>
+                    <p>Coba muat ulang halaman. Jika masih gagal, hubungi pengelola undangan.</p>
+                    <a href="">Muat ulang</a>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var app = document.getElementById('app');
+                    var error = document.getElementById('app-load-error');
+
+                    if (!app || !error) {
+                        return;
+                    }
+
+                    window.setTimeout(function () {
+                        if (!app.firstElementChild) {
+                            error.hidden = false;
+                        }
+                    }, 10000);
+
+                    if (typeof MutationObserver === 'function') {
+                        var observer = new MutationObserver(function () {
+                            if (app.firstElementChild) {
+                                error.hidden = true;
+                                observer.disconnect();
+                            }
+                        });
+
+                        observer.observe(app, { childList: true });
+                    }
+                });
+            </script>
+        @endif
     </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -52,6 +53,12 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Lang::addLines([
+            'auth.failed' => 'Email atau kata sandi tidak sesuai.',
+            'auth.password' => 'Kata sandi yang diberikan salah.',
+            'auth.throttle' => 'Terlalu banyak percobaan masuk. Coba lagi dalam :seconds detik.',
+        ], app()->getLocale());
+
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();

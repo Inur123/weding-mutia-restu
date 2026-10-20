@@ -2,24 +2,50 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 
 test('login screen can be rendered', function () {
     $response = $this->get(route('login'));
 
-    $response->assertOk();
+    $response->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('auth/login'))
+        ->assertSee('id="app-load-error"', escape: false)
+        ->assertSee('Halaman tidak dapat dimuat');
 });
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
+
+    $this->get(route('login'))->assertOk();
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
-    $this->assertAuthenticated();
+    $this->assertAuthenticatedAs($user);
     $response->assertRedirect(route('dashboard', absolute: false));
+
+    $this->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('dashboard')
+            ->where('auth.user.id', $user->id)
+            ->has('stats', 5));
+});
+
+test('users return to their intended dashboard page after authentication', function () {
+    $user = User::factory()->create();
+
+    $this->get(route('guests.index'))->assertRedirect(route('login'));
+
+    $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertRedirect(route('guests.index', absolute: false));
+
+    $this->get(route('guests.index'))->assertOk();
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
@@ -45,10 +71,11 @@ test('users with two factor enabled are redirected to two factor challenge', fun
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $this->post(route('login.store'), [
+    $this->from(route('login'))->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'wrong-password',
-    ]);
+    ])->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => 'Email atau kata sandi tidak sesuai.']);
 
     $this->assertGuest();
 });
@@ -61,6 +88,7 @@ test('users can logout', function () {
     $response->assertRedirect(route('login'));
 
     $this->assertGuest();
+    $this->get(route('dashboard'))->assertRedirect(route('login'));
 });
 
 test('users are rate limited', function () {
