@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Vite;
 
 final class InvitationAssets
 {
-    public const COVER_IMAGE_SOURCE = 'resources/images/theme-special03/couple.jpg';
+    public const COVER_IMAGE_SOURCE = 'resources/images/theme-special03/utama-warm.jpg';
 
-    public const FAVICON_SOURCE = 'resources/images/theme-special03/couple.jpg';
+    public const FAVICON_SOURCE = 'resources/images/theme-special03/utama-warm.jpg';
 
-    public const SHARE_IMAGE_SOURCE = 'resources/images/share/undangan-mutia-restu.jpg';
+    public const SHARE_IMAGE_SOURCE = 'resources/images/theme-special03/utama-warm.jpg';
 
     private const STYLE_SOURCE = 'resources/css/undangan/style.css';
 

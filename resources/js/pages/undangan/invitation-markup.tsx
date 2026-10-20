@@ -275,9 +275,9 @@ export function InvitationMarkup({
                             >
                                 <img
                                     src={featuredPhotos.heroMain}
-                                    alt="Ilustrasi pasangan pengantin"
-                                    width="1122"
-                                    height="1402"
+                                    alt="Foto Mutiara dan Restu"
+                                    width="1243"
+                                    height="1266"
                                     onError={useJpegFallback}
                                 />
                             </div>
@@ -384,9 +384,9 @@ export function InvitationMarkup({
                             >
                                 <img
                                     src={featuredPhotos.bride}
-                                    alt="Ilustrasi mempelai wanita"
-                                    width="1122"
-                                    height="1402"
+                                    alt="Foto Mutiara"
+                                    width="1024"
+                                    height="1536"
                                     onError={useJpegFallback}
                                 />
                             </div>
@@ -414,9 +414,9 @@ export function InvitationMarkup({
                             >
                                 <img
                                     src={featuredPhotos.groom}
-                                    alt="Ilustrasi mempelai pria"
-                                    width="1122"
-                                    height="1402"
+                                    alt="Foto Restu"
+                                    width="1024"
+                                    height="1536"
                                     onError={useJpegFallback}
                                 />
                             </div>

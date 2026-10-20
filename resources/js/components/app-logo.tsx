@@ -1,6 +1,6 @@
 import { usePage } from '@inertiajs/react';
 
-import Favicon from '../../images/theme-special03/couple.jpg';
+import Favicon from '../../images/theme-special03/utama-warm.jpg';
 
 export default function AppLogo() {
     const { name } = usePage().props;

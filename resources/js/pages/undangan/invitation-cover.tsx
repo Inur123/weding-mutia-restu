@@ -40,9 +40,9 @@ export function InvitationCover({
                     <img
                         id="cover-portrait"
                         src={featuredPhotos.cover}
-                        alt="Ilustrasi pasangan pengantin"
-                        width="1122"
-                        height="1402"
+                        alt="Foto Mutiara dan Restu"
+                        width="1243"
+                        height="1266"
                         fetchPriority="high"
                         onLoad={dismissInvitationLoader}
                         onError={onImageError}

@@ -49,7 +49,7 @@ test('guest share message contains the guest name and personal invitation link',
         ->toEndWith("Hormat kami,\nMutiara & Restu");
 });
 
-test('invitation share metadata uses an optimized cover thumbnail and personal guest name', function () {
+test('invitation share metadata uses the couple photo and personal guest name', function () {
     $guest = Guest::factory()->create(['name' => 'Zainur']);
 
     $response = $this->get(route('undangan', ['to' => $guest->slug]));
@@ -57,15 +57,15 @@ test('invitation share metadata uses an optimized cover thumbnail and personal g
     $response
         ->assertSee('Kepada Yth. Zainur, kami mengundang Anda untuk menghadiri pernikahan Mutiara &amp; Restu.', false)
         ->assertSee(InvitationAssets::shareImageUrl(), false)
-        ->assertSee('<meta property="og:image:width" content="1200" />', false)
-        ->assertSee('<meta property="og:image:height" content="1200" />', false)
+        ->assertSee('<meta property="og:image:width" content="1243" />', false)
+        ->assertSee('<meta property="og:image:height" content="1266" />', false)
         ->assertSee('Foto cover undangan pernikahan Mutiara dan Restu', false)
         ->assertDontSee('?v=', false);
 
-    expect(resource_path('images/share/undangan-mutia-restu.jpg'))
+    expect(resource_path('images/theme-special03/utama-warm.jpg'))
         ->toBeFile()
-        ->and(getimagesize(resource_path('images/share/undangan-mutia-restu.jpg')))
-        ->toMatchArray([1200, 1200]);
+        ->and(getimagesize(resource_path('images/theme-special03/utama-warm.jpg')))
+        ->toMatchArray([1243, 1266]);
 
     $response->assertInertia(fn ($page) => $page
         ->where('invitationAssets.style', InvitationAssets::styleUrls()['style'])

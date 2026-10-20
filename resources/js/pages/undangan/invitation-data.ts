@@ -1,6 +1,6 @@
-import illustrationCouple from '../../../images/theme-special03/couple.jpg';
-import illustrationBride from '../../../images/theme-special03/bride.jpg';
-import illustrationGroom from '../../../images/theme-special03/groom.jpg';
+import couplePortrait from '../../../images/theme-special03/utama-warm.jpg';
+import bridePortrait from '../../../images/theme-special03/mutia-warm.jpg';
+import groomPortrait from '../../../images/theme-special03/restu-warm.jpg';
 
 export type Attendance = 'hadir' | 'tidak' | 'belum';
 
@@ -46,10 +46,10 @@ export const invitation = {
 } as const;
 
 export const featuredPhotos = {
-    cover: illustrationCouple,
-    heroMain: illustrationCouple,
-    bride: illustrationBride,
-    groom: illustrationGroom,
+    cover: couplePortrait,
+    heroMain: couplePortrait,
+    bride: bridePortrait,
+    groom: groomPortrait,
 } as const;
 
 export const loveStory = [
