@@ -7,21 +7,31 @@ import { useInvitation } from './use-invitation';
 
 interface UndanganProps {
     guestName: string;
+    guestSlug: string;
     invitationAssets: {
         style: string;
         compat: string;
     };
     rsvps: Wish[];
+    rsvpNextCursor: string | null;
     rsvpTotal: number;
 }
 
 export default function UndanganIndex({
     guestName,
+    guestSlug,
     invitationAssets,
     rsvps,
+    rsvpNextCursor,
     rsvpTotal,
 }: UndanganProps) {
-    const model = useInvitation(guestName, rsvps, rsvpTotal);
+    const model = useInvitation(
+        guestName,
+        guestSlug,
+        rsvps,
+        rsvpNextCursor,
+        rsvpTotal,
+    );
 
     useEffect(() => {
         const coverImage = document.getElementById(

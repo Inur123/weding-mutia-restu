@@ -7,7 +7,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { store as storeRsvp } from '@/routes/api/rsvp';
+import { index as indexRsvp, store as storeRsvp } from '@/routes/api/rsvp';
 import {
     type Attendance,
     type Wish,
@@ -21,6 +21,7 @@ import { useInvitationMotion } from './use-invitation-motion';
 type CoverPhase = 'closed' | 'exiting' | 'open';
 type WishForm = { name: string; attendance: Attendance | ''; message: string };
 type RsvpResponse = { rsvp: Wish };
+type WishPageResponse = { data: Wish[]; nextCursor: string | null };
 
 const sectionIds = [
     'beranda',
@@ -46,7 +47,9 @@ function getCountdown() {
 
 export function useInvitation(
     guestName: string,
+    guestSlug: string,
     initialWishes: Wish[],
+    initialNextCursor: string | null,
     initialTotal: number,
 ) {
     const rootRef = useRef<HTMLDivElement>(null);
@@ -54,6 +57,7 @@ export function useInvitation(
     const mainTitleRef = useRef<HTMLHeadingElement>(null);
     const openButtonRef = useRef<HTMLButtonElement>(null);
     const wishListRef = useRef<HTMLDivElement>(null);
+    const loadingWishesRef = useRef(false);
     const coverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -80,6 +84,9 @@ export function useInvitation(
     });
     const [wishes, setWishes] = useState(initialWishes);
     const [wishTotal, setWishTotal] = useState(initialTotal);
+    const [nextWishCursor, setNextWishCursor] = useState(initialNextCursor);
+    const [wishesLoading, setWishesLoading] = useState(false);
+    const [wishesError, setWishesError] = useState('');
     const [wishListMaxHeight, setWishListMaxHeight] = useState<string>();
     const [formStatus, setFormStatus] = useState('');
     const [toast, setToast] = useState('');
@@ -88,6 +95,7 @@ export function useInvitation(
         attendance: '',
         message: '',
     });
+    const wishPages = useHttp<Record<string, string>, WishPageResponse>({});
 
     const showToast = useCallback((message: string) => {
         if (toastTimerRef.current) {
@@ -292,6 +300,50 @@ export function useInvitation(
         );
     };
 
+    const loadMoreWishes = async () => {
+        if (!nextWishCursor || loadingWishesRef.current) return;
+
+        loadingWishesRef.current = true;
+        setWishesLoading(true);
+        setWishesError('');
+
+        try {
+            const page = await wishPages.get(
+                indexRsvp.url({
+                    query: { to: guestSlug, cursor: nextWishCursor },
+                }),
+            );
+
+            if (!page) {
+                throw new Error('Halaman ucapan tidak tersedia.');
+            }
+
+            setWishes((current) => {
+                const existingIds = new Set(current.map((wish) => wish.id));
+                return [
+                    ...current,
+                    ...page.data.filter((wish) => !existingIds.has(wish.id)),
+                ];
+            });
+            setNextWishCursor(page.nextCursor);
+        } catch {
+            setWishesError('Ucapan berikutnya belum berhasil dimuat.');
+        } finally {
+            loadingWishesRef.current = false;
+            setWishesLoading(false);
+        }
+    };
+
+    const onWishListScroll = () => {
+        const list = wishListRef.current;
+        if (
+            list &&
+            list.scrollHeight - list.scrollTop - list.clientHeight <= 80
+        ) {
+            void loadMoreWishes();
+        }
+    };
+
     const submitWish = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (form.processing) return;
@@ -304,7 +356,7 @@ export function useInvitation(
         form.transform((data) => ({ ...data, name, message }));
         void form.post(storeRsvp.url(), {
             onSuccess: ({ rsvp }) => {
-                setWishes((current) => [rsvp, ...current].slice(0, 100));
+                setWishes((current) => [rsvp, ...current]);
                 setWishTotal((current) => current + 1);
                 form.setData('message', '');
                 setFormStatus('Terima kasih. Ucapan Anda telah tersimpan.');
@@ -388,6 +440,8 @@ export function useInvitation(
         countdown,
         wishes,
         wishTotal,
+        wishesLoading,
+        wishesError,
         wishListMaxHeight,
         formStatus,
         toast,
@@ -397,6 +451,8 @@ export function useInvitation(
         backToCover,
         saveDate,
         submitWish,
+        loadMoreWishes,
+        onWishListScroll,
         copyGift,
     };
 }

@@ -635,6 +635,10 @@ export function InvitationMarkup({
                             <div
                                 className="wish-list"
                                 ref={model.wishListRef}
+                                role="region"
+                                aria-label="Daftar ucapan"
+                                tabIndex={0}
+                                onScroll={model.onWishListScroll}
                                 style={{ maxHeight: model.wishListMaxHeight }}
                             >
                                 {model.wishes.length ? (
@@ -646,6 +650,32 @@ export function InvitationMarkup({
                                         Belum ada ucapan. Jadilah orang pertama
                                         yang mengirimkan doa baik.
                                     </p>
+                                )}
+                                {model.wishesLoading && (
+                                    <p
+                                        className="wish-feed-status"
+                                        role="status"
+                                    >
+                                        <span
+                                            className="wish-feed-spinner"
+                                            aria-hidden="true"
+                                        />
+                                        Memuat ucapan berikutnya...
+                                    </p>
+                                )}
+                                {model.wishesError && (
+                                    <div
+                                        className="wish-feed-status"
+                                        role="alert"
+                                    >
+                                        <span>{model.wishesError}</span>
+                                        <button
+                                            type="button"
+                                            onClick={model.loadMoreWishes}
+                                        >
+                                            Coba lagi
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>

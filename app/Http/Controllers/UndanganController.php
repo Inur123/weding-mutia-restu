@@ -35,15 +35,17 @@ class UndanganController extends Controller
             return $this->notFound($request);
         }
 
-        $rsvps = Rsvp::select('id', 'name', 'attendance', 'message')
-            ->orderByDesc('created_at')
-            ->limit(100)
-            ->get();
+        $rsvps = Rsvp::query()
+            ->select('id', 'name', 'attendance', 'message')
+            ->orderByDesc('id')
+            ->cursorPaginate(10, ['*'], 'initial_wishes');
 
         $response = Inertia::render('undangan/index', [
             'guestName' => $guest->name,
+            'guestSlug' => $guest->slug,
             'invitationAssets' => InvitationAssets::styleUrls(),
-            'rsvps' => $rsvps,
+            'rsvps' => $rsvps->items(),
+            'rsvpNextCursor' => $rsvps->nextCursor()?->encode(),
             'rsvpTotal' => Rsvp::count(),
         ])->toResponse($request);
 

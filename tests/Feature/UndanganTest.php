@@ -14,6 +14,8 @@ test('public invitation and RSVP routes use the Mutia Restu client prefix', func
         ->toBe('/mutiarestu/mengundang?to=anis');
     expect(route('api.rsvp.store', absolute: false))
         ->toBe('/mutiarestu/api/rsvp');
+    expect(route('api.rsvp.index', absolute: false))
+        ->toBe('/mutiarestu/api/rsvp');
 });
 
 test('public invitation accepts a guest slug and protects the response from referrer and cache exposure', function () {
@@ -132,13 +134,88 @@ test('invitation stops working when the registered guest is deleted', function (
     $this->get($url)->assertNotFound();
 });
 
-test('invitation shows only the latest hundred wishes while counting all wishes', function () {
+test('invitation loads ten wishes at a time until all wishes are available', function () {
     $guest = Guest::factory()->create(['name' => 'Ibu Sari']);
     Rsvp::factory()->count(101)->create();
 
     $response = $this->get(route('undangan', ['to' => $guest->slug]))->assertOk();
+
     expect($response->inertiaProps('rsvpTotal'))->toBe(101);
-    expect($response->inertiaProps('rsvps'))->toHaveCount(100);
+    expect($response->inertiaProps('rsvps'))->toHaveCount(10);
+
+    $wishIds = array_column($response->inertiaProps('rsvps'), 'id');
+    $cursor = $response->inertiaProps('rsvpNextCursor');
+
+    while ($cursor !== null) {
+        $page = $this->getJson(route('api.rsvp.index', [
+            'to' => $guest->slug,
+            'cursor' => $cursor,
+        ]))->assertOk();
+
+        expect($page->json('data'))->toHaveCount($page->json('nextCursor') ? 10 : 1);
+        $wishIds = array_merge($wishIds, array_column($page->json('data'), 'id'));
+        $cursor = $page->json('nextCursor');
+    }
+
+    expect($wishIds)->toHaveCount(101)
+        ->toBe(Rsvp::query()->orderByDesc('id')->pluck('id')->all());
+});
+
+test('new wishes do not repeat or skip older wishes while scrolling', function () {
+    $guest = Guest::factory()->create(['name' => 'Ibu Sari']);
+    Rsvp::factory()->count(11)->create();
+    $oldestWish = Rsvp::query()->orderBy('id')->firstOrFail();
+
+    $firstPage = $this->get(route('undangan', ['to' => $guest->slug]))->assertOk();
+    Rsvp::factory()->create();
+
+    $secondPage = $this->getJson(route('api.rsvp.index', [
+        'to' => $guest->slug,
+        'cursor' => $firstPage->inertiaProps('rsvpNextCursor'),
+    ]))->assertOk();
+
+    expect($secondPage->json('data'))->toHaveCount(1);
+    expect($secondPage->json('data.0.id'))->toBe($oldestWish->id);
+    expect($secondPage->json('nextCursor'))->toBeNull();
+});
+
+test('public wish pages reject unknown guests and malformed cursors', function () {
+    $guest = Guest::factory()->create(['name' => 'Ibu Sari']);
+
+    $this->getJson(route('api.rsvp.index', ['to' => 'not-a-guest']))
+        ->assertNotFound();
+    $this->getJson(route('api.rsvp.index', [
+        'to' => $guest->slug,
+        'cursor' => 'not-a-cursor',
+    ]))->assertUnprocessable()
+        ->assertJsonPath('message', 'Halaman ucapan tidak valid.');
+});
+
+test('empty invitation wishes have no additional page', function () {
+    $guest = Guest::factory()->create(['name' => 'Ibu Sari']);
+
+    $response = $this->get(route('undangan', ['to' => $guest->slug]))->assertOk();
+
+    expect($response->inertiaProps('rsvps'))->toBe([]);
+    expect($response->inertiaProps('rsvpNextCursor'))->toBeNull();
+    expect($response->inertiaProps('rsvpTotal'))->toBe(0);
+});
+
+test('sending a wish still saves it and returns it to the invitation', function () {
+    $guest = Guest::factory()->create(['name' => 'Ibu Sari']);
+
+    $response = $this->postJson(route('api.rsvp.store'), [
+        'name' => $guest->name,
+        'attendance' => 'hadir',
+        'message' => 'Semoga bahagia selalu.',
+    ])->assertCreated();
+
+    $response->assertJsonPath('rsvp.message', 'Semoga bahagia selalu.');
+    $this->assertDatabaseHas('rsvps', [
+        'name' => $guest->name,
+        'attendance' => 'hadir',
+        'message' => 'Semoga bahagia selalu.',
+    ]);
 });
 
 test('duplicate guest names get unique slugs', function () {

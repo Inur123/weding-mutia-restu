@@ -2,15 +2,57 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guest;
 use App\Models\Rsvp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Cursor;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class RsvpController extends Controller
 {
+    public function publicIndex(Request $request): JsonResponse
+    {
+        $guestSlug = $request->query('to');
+
+        if (! is_string($guestSlug)
+            || $guestSlug === ''
+            || strlen($guestSlug) > 120
+            || ! Guest::query()->where('slug', $guestSlug)->exists()) {
+            abort(404);
+        }
+
+        $encodedCursor = $request->query('cursor');
+        $cursor = null;
+
+        if ($encodedCursor !== null) {
+            $cursor = is_string($encodedCursor) && strlen($encodedCursor) <= 255
+                ? Cursor::fromEncoded($encodedCursor)
+                : null;
+            $cursorValues = $cursor?->toArray();
+
+            if ($cursorValues === null
+                || count($cursorValues) !== 2
+                || ! is_int($cursorValues['id'] ?? null)
+                || ($cursorValues['_pointsToNextItems'] ?? null) !== true) {
+                return response()->json(['message' => 'Halaman ucapan tidak valid.'], 422);
+            }
+        }
+
+        $rsvps = Rsvp::query()
+            ->select('id', 'name', 'attendance', 'message')
+            ->orderByDesc('id')
+            ->cursorPaginate(10, ['*'], 'cursor', $cursor);
+
+        return response()->json([
+            'data' => $rsvps->items(),
+            'nextCursor' => $rsvps->nextCursor()?->encode(),
+        ])->header('Cache-Control', 'private, no-store')
+            ->header('X-Robots-Tag', 'noindex, nofollow');
+    }
+
     public function index(Request $request): Response
     {
         $filter = $request->get('filter', 'semua');

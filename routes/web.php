@@ -12,7 +12,8 @@ Route::prefix('mutiarestu')->group(function () {
     // Halaman undangan publik (tanpa auth)
     Route::get('mengundang', [UndanganController::class, 'show'])->name('undangan');
 
-    // API publik untuk RSVP (tanpa auth) dengan rate limiter (maks 3 request per menit per IP)
+    // Daftar ucapan publik dimuat bertahap; pengiriman RSVP dibatasi per IP.
+    Route::get('api/rsvp', [RsvpController::class, 'publicIndex'])->name('api.rsvp.index');
     Route::post('api/rsvp', [RsvpController::class, 'store'])->name('api.rsvp.store')->middleware('throttle:3,1');
 
     // Dashboard (auth required)

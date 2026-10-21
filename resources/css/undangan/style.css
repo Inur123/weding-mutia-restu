@@ -1164,6 +1164,57 @@ img {
     scrollbar-width: thin;
 }
 
+.wish-list:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+}
+
+.wish-feed-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 10px 48px;
+    color: var(--rust-dark);
+    font-size: 12px;
+    text-align: center;
+}
+
+.wish-feed-status button {
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--rust-dark);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.wish-feed-status button:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+}
+
+.wish-feed-spinner {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    border: 2px solid var(--paper-deep);
+    border-top-color: var(--rust);
+    border-radius: 50%;
+    animation: wish-feed-spin 800ms linear infinite;
+}
+
+@keyframes wish-feed-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wish-feed-spinner { animation: none; }
+}
+
 .wish {
     display: grid;
     grid-template-columns: 36px 1fr;
@@ -1204,6 +1255,7 @@ img {
     display: block;
     color: var(--rust);
     font-size: 13px;
+    overflow-wrap: break-word;
 }
 
 .wish-badge {
@@ -1217,6 +1269,7 @@ img {
     display: -webkit-box;
     margin-top: 5px;
     overflow: hidden;
+    overflow-wrap: break-word;
     color: #4c403b;
     font-size: 13px;
     line-height: 1.65;
@@ -1563,6 +1616,24 @@ img {
 
 @media (max-width: 767px) {
     .cover-title, .reference-hero h1 { font-size: clamp(34px, 10.26vw, 40px); }
+}
+
+@media (max-width: 767px) and (max-height: 640px) {
+    .cover-paper { min-height: max(100dvh, 480px); }
+    .cover-title { margin: 20px 0 12px; }
+    .guest strong { margin-top: 14px; }
+    .cover-note { margin: 8px 0 16px; }
+
+    .reference-nav { grid-template-columns: repeat(5, minmax(0, 1fr)) 46px; }
+    .music-button {
+        right: calc(50% - 203px);
+        bottom: calc(25px + env(safe-area-inset-bottom, 0px));
+        z-index: 81;
+    }
+}
+
+@media (max-width: 442px) and (max-height: 640px) {
+    .music-button { right: 18px; }
 }
 
 @media (max-width: 360px) {
