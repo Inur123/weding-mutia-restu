@@ -39,17 +39,21 @@
             }
         </style>
 
-        @if (($page['component'] ?? null) !== 'undangan/index')
-            <style>
-                #app-load-error[hidden] { display: none; }
-                #app-load-error { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #fff; color: #171717; font-family: sans-serif; }
-                #app-load-error > div { width: 100%; max-width: 380px; }
-                #app-load-error h1 { font-size: 22px; }
-                #app-load-error p { line-height: 1.6; }
-                #app-load-error a { display: inline-block; min-height: 44px; padding: 12px 20px; border-radius: 6px; background: #171717; color: #fff; text-decoration: none; box-sizing: border-box; }
-                #app-load-error a:focus-visible { outline: 2px solid #171717; outline-offset: 3px; }
-            </style>
-        @endif
+        <style>
+            #app-load-error[hidden] { display: none; }
+            #app-load-error { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 48px 20px; background: #f4eadb; color: #332d29; font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif; box-sizing: border-box; }
+            #app-load-error *, #app-load-error *::before, #app-load-error *::after { box-sizing: border-box; }
+            #app-load-error > div { width: 100%; max-width: 448px; padding: 40px 28px; border: 1px solid #e5d2bc; border-radius: 16px; background: #fffdf9; box-shadow: 0 18px 50px rgba(83, 43, 28, .07); }
+            #app-load-error .error-rule { width: 48px; height: 4px; margin-bottom: 32px; border-radius: 99px; background: #8a4b33; }
+            #app-load-error .error-eyebrow { margin: 0; color: #8a4b33; font-size: 12px; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; }
+            #app-load-error h1 { margin: 20px 0 0; font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif; font-size: 24px; font-weight: 600; line-height: 1.25; }
+            #app-load-error .error-description { margin: 12px 0 0; color: #65554d; font-size: 14px; line-height: 28px; }
+            #app-load-error a { display: inline-flex; min-height: 44px; align-items: center; margin-top: 20px; color: #8a4b33; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+            #app-load-error a:focus-visible { outline: 2px solid #8a4b33; outline-offset: 3px; }
+            @media (min-width: 640px) {
+                #app-load-error > div { padding-right: 40px; padding-left: 40px; }
+            }
+        </style>
 
         @if (($page['component'] ?? null) === 'undangan/index')
             <meta name="color-scheme" content="light" data-inertia="color-scheme">
@@ -186,41 +190,41 @@
 
         <x-inertia::app />
 
-        @if (($page['component'] ?? null) !== 'undangan/index')
-            <div id="app-load-error" hidden role="alert">
-                <div>
-                    <h1>Halaman tidak dapat dimuat</h1>
-                    <p>Coba muat ulang halaman. Jika masih gagal, hubungi pengelola undangan.</p>
-                    <a href="">Muat ulang</a>
-                </div>
+        <div id="app-load-error" hidden role="alert">
+            <div>
+                <div class="error-rule" aria-hidden="true"></div>
+                <p class="error-eyebrow">Undangan pernikahan</p>
+                <h1>Halaman tidak dapat dimuat</h1>
+                <p class="error-description">Coba muat ulang halaman. Jika masih gagal, hubungi pengelola undangan.</p>
+                <a href="">Muat ulang</a>
             </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var app = document.getElementById('app');
-                    var error = document.getElementById('app-load-error');
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var app = document.getElementById('app');
+                var error = document.getElementById('app-load-error');
 
-                    if (!app || !error) {
-                        return;
+                if (!app || !error) {
+                    return;
+                }
+
+                window.setTimeout(function () {
+                    if (!app.firstElementChild) {
+                        error.hidden = false;
                     }
+                }, 10000);
 
-                    window.setTimeout(function () {
-                        if (!app.firstElementChild) {
-                            error.hidden = false;
+                if (typeof MutationObserver === 'function') {
+                    var observer = new MutationObserver(function () {
+                        if (app.firstElementChild) {
+                            error.hidden = true;
+                            observer.disconnect();
                         }
-                    }, 10000);
+                    });
 
-                    if (typeof MutationObserver === 'function') {
-                        var observer = new MutationObserver(function () {
-                            if (app.firstElementChild) {
-                                error.hidden = true;
-                                observer.disconnect();
-                            }
-                        });
-
-                        observer.observe(app, { childList: true });
-                    }
-                });
-            </script>
-        @endif
+                    observer.observe(app, { childList: true });
+                }
+            });
+        </script>
     </body>
 </html>

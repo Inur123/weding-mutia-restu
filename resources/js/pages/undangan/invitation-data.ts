@@ -26,7 +26,7 @@ export const invitation = {
     },
     date: '2026-11-19T07:00:00+07:00',
     akadTime: '07.00 WIB',
-    receptionTime: '10.00 WIB',
+    receptionTime: '09.00 WIB',
     address: 'Ds. Sukowidi, RT 14 RW 03, Kec. Nguntoronadi, Kab. Magetan',
     mapsUrl: 'https://share.google/xR1qBzBpoVnXcFtp2',
     gifts: [
