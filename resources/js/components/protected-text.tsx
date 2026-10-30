@@ -33,4 +33,3 @@ export function ProtectedText<T extends ElementType = 'span'>({
 
     return <Component {...props} {...noTranslateProps(className)} />;
 }
-
