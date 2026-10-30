@@ -559,6 +559,9 @@ export function InvitationMarkup({
                                     id="wish-name"
                                     name="name"
                                     autoComplete="name"
+                                    autoCorrect="off"
+                                    autoCapitalize="words"
+                                    spellCheck={false}
                                     value={model.form.data.name}
                                     onChange={(event) =>
                                         model.form.setData(
