@@ -6,6 +6,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import { noTranslateProps, ProtectedText } from '@/components/protected-text';
 import {
     attendanceLabels,
     featuredPhotos,
@@ -59,11 +60,13 @@ function WishCard({ wish }: { wish: Wish }) {
 
     return (
         <article className="wish">
-            <span className="wish-avatar" aria-hidden="true">
+            <ProtectedText className="wish-avatar" aria-hidden="true">
                 {Array.from(wish.name)[0]?.toUpperCase() || 'T'}
-            </span>
+            </ProtectedText>
             <div className="wish-card">
-                <strong className="wish-author">{wish.name}</strong>
+                <ProtectedText as="strong" className="wish-author">
+                    {wish.name}
+                </ProtectedText>
                 <span className="wish-badge">
                     {attendanceLabels[wish.attendance]}
                 </span>
@@ -124,26 +127,30 @@ function GiftAccountCard({
         >
             <header className="gift-account__header">
                 <span>Transfer Bank</span>
-                <h3 id={headingId}>
+                <ProtectedText as="h3" id={headingId}>
                     {account.bank || 'Nama bank belum diisi'}
-                </h3>
+                </ProtectedText>
             </header>
             <dl className="gift-account__details">
                 <div>
                     <dt>Nomor rekening</dt>
-                    <dd
-                        className={
-                            accountNumber
-                                ? 'gift-account__number'
-                                : 'gift-account__placeholder'
-                        }
-                    >
-                        {accountNumber || 'Rekening belum tersedia'}
-                    </dd>
+                    {accountNumber ? (
+                        <ProtectedText as="dd" className="gift-account__number">
+                            {accountNumber}
+                        </ProtectedText>
+                    ) : (
+                        <dd className="gift-account__placeholder">
+                            Rekening belum tersedia
+                        </dd>
+                    )}
                 </div>
                 <div>
                     <dt>Atas nama</dt>
-                    <dd>{account.holder || 'Nama pemilik belum diisi'}</dd>
+                    {account.holder ? (
+                        <ProtectedText as="dd">{account.holder}</ProtectedText>
+                    ) : (
+                        <dd>Nama pemilik belum diisi</dd>
+                    )}
                 </div>
             </dl>
             <button
@@ -189,7 +196,7 @@ function EventCard({
             <p className="event-time">{time}</p>
             <div className="event-location">
                 <span>Lokasi Acara</span>
-                <p>{invitation.address}</p>
+                <ProtectedText as="p">{invitation.address}</ProtectedText>
             </div>
             <a
                 className="reference-button reference-button--small"
@@ -212,10 +219,10 @@ function DesktopStage() {
             <InvitationDecor variant="hero" />
             <div>
                 <p data-reveal="down">THE WEDDING OF</p>
-                <h2 data-reveal="zoom">
+                <ProtectedText as="h2" data-reveal="zoom">
                     {invitation.bride.short} <span>&amp;</span>{' '}
                     {invitation.groom.short}
-                </h2>
+                </ProtectedText>
                 <p data-reveal="zoom">
                     {formatWeddingDate({
                         weekday: 'long',
@@ -276,13 +283,15 @@ export function InvitationMarkup({
                                 <img
                                     src={featuredPhotos.heroMain}
                                     alt="Foto Mutiara dan Restu"
+                                    {...noTranslateProps()}
                                     width="1243"
                                     height="1266"
                                     onError={useJpegFallback}
                                 />
                             </div>
                         </div>
-                        <h1
+                        <ProtectedText
+                            as="h1"
                             ref={model.mainTitleRef}
                             tabIndex={-1}
                             data-reveal="up"
@@ -290,7 +299,7 @@ export function InvitationMarkup({
                         >
                             {invitation.bride.short} <span>&amp;</span>{' '}
                             {invitation.groom.short}
-                        </h1>
+                        </ProtectedText>
                         <p
                             className="hero-date-line"
                             data-reveal="up"
@@ -385,18 +394,21 @@ export function InvitationMarkup({
                                 <img
                                     src={featuredPhotos.bride}
                                     alt="Foto Mutiara"
+                                    {...noTranslateProps()}
                                     width="1024"
                                     height="1536"
                                     onError={useJpegFallback}
                                 />
                             </div>
-                            <h3 data-reveal="up">{invitation.bride.full}</h3>
+                            <ProtectedText as="h3" data-reveal="up">
+                                {invitation.bride.full}
+                            </ProtectedText>
                             <p data-reveal="up">
                                 Putri {invitation.bride.childOrder} dari
                             </p>
-                            <strong data-reveal="up">
+                            <ProtectedText as="strong" data-reveal="up">
                                 {invitation.bride.parents}
-                            </strong>
+                            </ProtectedText>
                         </article>
 
                         <div
@@ -415,18 +427,21 @@ export function InvitationMarkup({
                                 <img
                                     src={featuredPhotos.groom}
                                     alt="Foto Restu"
+                                    {...noTranslateProps()}
                                     width="1024"
                                     height="1536"
                                     onError={useJpegFallback}
                                 />
                             </div>
-                            <h3 data-reveal="up">{invitation.groom.full}</h3>
+                            <ProtectedText as="h3" data-reveal="up">
+                                {invitation.groom.full}
+                            </ProtectedText>
                             <p data-reveal="up">
                                 Putra {invitation.groom.childOrder} dari
                             </p>
-                            <strong data-reveal="up">
+                            <ProtectedText as="strong" data-reveal="up">
                                 {invitation.groom.parents}
-                            </strong>
+                            </ProtectedText>
                         </article>
                     </div>
                 </section>
@@ -509,7 +524,9 @@ export function InvitationMarkup({
                     </div>
                     <div className="gift-delivery" data-reveal="up">
                         <h3>Alamat Kirim Hadiah</h3>
-                        <p>{invitation.giftDeliveryAddress}</p>
+                        <ProtectedText as="p">
+                            {invitation.giftDeliveryAddress}
+                        </ProtectedText>
                     </div>
                 </section>
 
@@ -630,7 +647,8 @@ export function InvitationMarkup({
 
                         <div className="wish-book" data-reveal="up">
                             <p className="wish-total">
-                                {model.wishTotal} ucapan
+                                <ProtectedText>{model.wishTotal}</ProtectedText>{' '}
+                                ucapan
                             </p>
                             <div
                                 className="wish-list"
@@ -696,10 +714,10 @@ export function InvitationMarkup({
                         <strong data-reveal="up">
                             Wassalamu’alaikum Warahmatullahi Wabarakatuh
                         </strong>
-                        <h2 data-reveal="up">
+                        <ProtectedText as="h2" data-reveal="up">
                             {invitation.bride.short} <span>&amp;</span>{' '}
                             {invitation.groom.short}
-                        </h2>
+                        </ProtectedText>
                         <strong data-reveal="up">
                             Beserta kedua keluarga besar
                         </strong>

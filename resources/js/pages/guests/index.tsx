@@ -9,6 +9,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import { noTranslateProps, ProtectedText } from '@/components/protected-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -89,8 +90,10 @@ function DeleteGuestButton({
                     <AlertDialogTitle>Hapus Data Tamu?</AlertDialogTitle>
                     <AlertDialogDescription>
                         Apakah Anda yakin ingin menghapus{' '}
-                        <strong>"{guest.name}"</strong>? Data yang sudah dihapus
-                        tidak bisa dikembalikan.
+                        <ProtectedText as="strong">
+                            "{guest.name}"
+                        </ProtectedText>
+                        ? Data yang sudah dihapus tidak bisa dikembalikan.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -275,15 +278,21 @@ export default function GuestsIndex({
                                             className="min-w-0 py-4"
                                         >
                                             <div className="flex items-start gap-3">
-                                                <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-sm font-semibold text-slate-700">
+                                                <ProtectedText
+                                                    as="div"
+                                                    className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-sm font-semibold text-slate-700"
+                                                >
                                                     {Array.from(
                                                         guest.name,
                                                     )[0]?.toUpperCase() ?? 'T'}
-                                                </div>
+                                                </ProtectedText>
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-[15px] font-semibold text-slate-950">
+                                                    <ProtectedText
+                                                        as="p"
+                                                        className="truncate text-[15px] font-semibold text-slate-950"
+                                                    >
                                                         {guest.name}
-                                                    </p>
+                                                    </ProtectedText>
                                                     <p className="mt-0.5 text-xs text-slate-500">
                                                         Tamu #
                                                         {(guests.from || 1) +
@@ -393,7 +402,11 @@ export default function GuestsIndex({
                                                             {(guests.from ||
                                                                 1) + index}
                                                         </TableCell>
-                                                        <TableCell className="py-2 text-sm font-medium">
+                                                        <TableCell
+                                                            {...noTranslateProps(
+                                                                'py-2 text-sm font-medium',
+                                                            )}
+                                                        >
                                                             {guest.name}
                                                         </TableCell>
                                                         <TableCell className="py-2">

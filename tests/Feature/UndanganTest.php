@@ -231,3 +231,14 @@ test('duplicate guest names get unique slugs', function () {
     $this->get(route('undangan', ['to' => $budi1->slug]))->assertOk();
     $this->get(route('undangan', ['to' => $budi2->slug]))->assertOk();
 });
+
+test('invitation document language stays Indonesian regardless of the application locale', function (string $locale) {
+    app()->setLocale($locale);
+    $guest = Guest::factory()->create(['name' => 'Restu']);
+
+    $this->get(route('undangan', ['to' => $guest->slug]))
+        ->assertOk()
+        ->assertSee('<html lang="id"', false)
+        ->assertSee('<meta http-equiv="content-language" content="id">', false)
+        ->assertDontSee('<html lang="en"', false);
+})->with(['en', 'id']);

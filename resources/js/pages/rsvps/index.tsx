@@ -6,6 +6,7 @@ import {
     Clock,
     Filter,
 } from 'lucide-react';
+import { ProtectedText } from '@/components/protected-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -210,16 +211,22 @@ export default function RsvpsIndex({
                                                 className="min-w-0 py-4"
                                             >
                                                 <div className="flex items-start gap-3">
-                                                    <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-sm font-semibold text-slate-700">
+                                                    <ProtectedText
+                                                        as="div"
+                                                        className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-sm font-semibold text-slate-700"
+                                                    >
                                                         {Array.from(
                                                             rsvp.name,
                                                         )[0]?.toUpperCase() ??
                                                             'T'}
-                                                    </div>
+                                                    </ProtectedText>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="truncate font-semibold text-slate-900">
+                                                        <ProtectedText
+                                                            as="p"
+                                                            className="truncate font-semibold text-slate-900"
+                                                        >
                                                             {rsvp.name}
-                                                        </p>
+                                                        </ProtectedText>
                                                         <span
                                                             className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium ${config.color}`}
                                                         >
@@ -282,20 +289,23 @@ export default function RsvpsIndex({
                                                         </TableCell>
                                                         <TableCell className="py-3">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="bg-primary/10 text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                                                                <ProtectedText
+                                                                    as="div"
+                                                                    className="bg-primary/10 text-primary flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+                                                                >
                                                                     {Array.from(
                                                                         rsvp.name,
                                                                     )[0]?.toUpperCase() ??
                                                                         'T'}
-                                                                </div>
-                                                                <span
+                                                                </ProtectedText>
+                                                                <ProtectedText
                                                                     className="max-w-[150px] truncate text-sm font-semibold"
                                                                     title={
                                                                         rsvp.name
                                                                     }
                                                                 >
                                                                     {rsvp.name}
-                                                                </span>
+                                                                </ProtectedText>
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="py-3">

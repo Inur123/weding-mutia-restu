@@ -1,7 +1,14 @@
 @use('App\Support\InvitationAssets')
 
+@php
+    // Seluruh konten undangan dan dashboard berbahasa Indonesia, jadi bahasa dokumen
+    // tidak boleh mengikuti APP_LOCALE agar browser tidak salah mendeteksi dan
+    // menawarkan terjemahan. Hanya halaman starter "welcome" yang berbahasa Inggris.
+    $documentLanguage = ($page['component'] ?? null) === 'welcome' ? 'en' : 'id';
+@endphp
+
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($page['component'] ?? null) !== 'undangan/index' && ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ $documentLanguage }}" @class(['dark' => ($page['component'] ?? null) !== 'undangan/index' && ($appearance ?? 'system') == 'dark'])>
     <head>
         @php
             $invitationGuestName = data_get($page, 'props.guestName');
@@ -11,6 +18,7 @@
         @endphp
 
         <meta charset="utf-8">
+        <meta http-equiv="content-language" content="{{ $documentLanguage }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
